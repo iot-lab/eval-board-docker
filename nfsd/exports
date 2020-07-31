@@ -1,0 +1,2 @@
+/iotlab/images      *(rw,sync,insecure,fsid=0,no_subtree_check,no_root_squash)
+/iotlab/users       *(rw,sync,insecure,fsid=0,no_subtree_check,no_root_squash)
