@@ -1,6 +1,6 @@
 # Evaluation Board Docker image
 
-This Docker image sets up the software environment to boot an IoT-LAB gateway board. This setup used both DHCP/TFTP and NFS server and U-Boot bootloader write on the NAND flash memory (eg. Variscite VAR-SOM-AM35 ARM Cortex A8). The bootloader will fetch the Linux kernel from the TFTP server and the kernel will mount the root filesystem from the NFS server. This image can also be used to update the U-boot bootloader from Linux or via USB to Serial Converter cable (RS232-5V model) and can replace VAR-SOM-AM35 evaluation kit board.
+This Docker image sets up the software environment to boot an IoT-LAB gateway board. This setup used both DHCP/TFTP and NFS server and U-Boot bootloader write on the NAND flash memory (eg. Variscite VAR-SOM-AM35 ARM Cortex A8). The bootloader will fetch the Linux kernel from the TFTP server and the kernel will mount the root filesystem from the NFS server. This image can also be used to update the U-boot bootloader from Linux or via USB to Serial Converter cable and can replace VAR-SOM-AM35 evaluation kit board.
 
 ## Get IoT-LAB gateway image
 
@@ -58,19 +58,34 @@ sudo docker stop <container_id>
 sudo docker rm <container_id> 
 ```
 
-## Update U-boot
-
-TODO
-
-``` bash
-root@eval-board:~# ssh <gateway_ip> (192.168.1.[2..10]) 
-```
-
 ## Debug serial line
 
-TODO
+To read the serial line of the IoT-LAB gateway you need to connect a USB to serial converter cable (TTL-232R-3V3) at the back of it:
+
+* TXD <-> Yellow
+* RXD <-> Orange
+* GND <-> Black
 
 ``` bash
 sudo apt-get install python-serial
 sudo miniterm.py /dev/ttyUSB0 115200
+```
+
+## Update U-boot from serial line
+
+Stop the U-boot sequence (Hit any key to stop autoboot ...) and from the prompt type this comand
+
+``` bash
+VAR-SOM-AM35 # setenv bootfile boot.scr; bootp; source
+VAR-SOM-AM35 # reset
+```
+
+## Update U-boot from Linux
+
+``` bash
+root@eval-board:~# scp -r u-boot <gateway_ip> (192.168.1.[2..10])
+root@eval-board~# ssh <gateway_ip>
+*-iotlab-board~# cd u-boot
+*-iotlab-board~# ./uboot_2015_update.sh (update U-boot with 2015.01 version)
+*-iotlab-board~# ./uboot_bootcmd_update.sh (Debian Stretch migration = update U-boot bootcmd env variable with nfsvers=3)
 ```
